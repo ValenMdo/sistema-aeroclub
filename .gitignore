@@ -1,0 +1,53 @@
+# IntelliJ IDEA / Eclipse / VS Code
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+dist-ssr/
+*.local
+
+# Java / Maven / Spring Boot
+target/
+*.class
+*.log
+*.jar
+*.war
+*.ear
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties
+hs_err_pid*
+
+# Sensitive Information & Environments
+.env
+.env.*
+! .env.example
+application.properties
+
+# Zips and Backups
+*.zip
+*.tar.gz
+*.rar
+*.bak
+
+# Si la base de datos sql contiene datos reales, descomentar la siguiente linea:
+ *.sql
