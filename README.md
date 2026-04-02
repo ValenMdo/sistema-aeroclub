@@ -188,10 +188,4 @@ Muestra estadísticas clave del aeroclub en tiempo real.
 
 Este es un MVP funcional enfocado en simplicidad y usabilidad. Las funcionalidades avanzadas como reportes complejos o gestión de pagos no están incluidas intencionalmente.
 
-## 📄 Licencia
 
-Este proyecto es parte de un sistema de gestión de aeroclubes.
-
----
-
-**Desarrollado con React + Tailwind CSS**
