@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import com.ValenMDO.managerAeroclub.excepciones.ConflictException;
+import com.ValenMDO.managerAeroclub.excepciones.RequestException;
+import com.ValenMDO.managerAeroclub.excepciones.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -55,7 +59,7 @@ public class UsuarioService {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token no presente");
+            throw new RequestException("P-400", HttpStatus.BAD_REQUEST, "Token no presente");
         }
 
         String token = authHeader.substring(7);
@@ -65,7 +69,7 @@ public class UsuarioService {
         Long userId = claims.get("id", Long.class);
 
         return usuarioRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 
     // -------------------------------
@@ -75,10 +79,10 @@ public class UsuarioService {
     public void cambiarPassword(PasswordDTO dto) {
 
         Usuario usuario = usuarioRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         if (!usuario.getPassword().equals(dto.getPasswordActual())) {
-            throw new RuntimeException("La contraseña actual es incorrecta");
+            throw new RequestException("P-400", HttpStatus.BAD_REQUEST, "La contraseña actual es incorrecta");
         }
 
         usuario.setPassword(dto.getPasswordNueva());
@@ -100,10 +104,10 @@ public class UsuarioService {
     public String login(LoginRequest request) {
 
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
-            throw new RuntimeException("Credenciales inválidas");
+            throw new RequestException("P-400", HttpStatus.BAD_REQUEST, "Credenciales inválidas");
         }
 
         return jwtUtil.generarToken(usuario);
@@ -140,7 +144,7 @@ public class UsuarioService {
     public void eliminar(Long id) {
 
         if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado");
+            throw new ResourceNotFoundException("Usuario no encontrado");
         }
 
         usuarioRepository.deleteById(id);
@@ -159,14 +163,14 @@ public class UsuarioService {
      */
     public Usuario bloquearUsuario(Long userId, Long adminId) {
         Usuario admin = usuarioRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Administrador no encontrado"));
 
         if (admin.getRol() != RolesUsarios.ADMIN) {
-            throw new RuntimeException("Solo los administradores pueden bloquear usuarios");
+            throw new ConflictException("P-409", HttpStatus.CONFLICT, "Solo los administradores pueden bloquear usuarios");
         }
 
         Usuario usuario = usuarioRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         usuario.setBloqueado(true);
         return usuarioRepository.save(usuario);
@@ -177,14 +181,14 @@ public class UsuarioService {
      */
     public Usuario desbloquearUsuario(Long userId, Long adminId) {
         Usuario admin = usuarioRepository.findById(adminId)
-                .orElseThrow(() -> new RuntimeException("Administrador no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Administrador no encontrado"));
 
         if (admin.getRol() != RolesUsarios.ADMIN) {
-            throw new RuntimeException("Solo los administradores pueden desbloquear usuarios");
+            throw new ConflictException("P-409", HttpStatus.CONFLICT, "Solo los administradores pueden desbloquear usuarios");
         }
 
         Usuario usuario = usuarioRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         usuario.setBloqueado(false);
 

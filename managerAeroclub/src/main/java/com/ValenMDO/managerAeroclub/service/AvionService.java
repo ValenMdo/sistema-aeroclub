@@ -7,7 +7,9 @@ import com.ValenMDO.managerAeroclub.model.Avion;
 import com.ValenMDO.managerAeroclub.repository.AvionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.ValenMDO.managerAeroclub.excepciones.ResourceNotFoundException;
+import com.ValenMDO.managerAeroclub.excepciones.RequestException;
+import org.springframework.http.HttpStatus;
 import java.util.List;
 
 @Service
@@ -22,7 +24,7 @@ public class AvionService {
 
     public Avion crearAvion(AvionDTO dto){
         if (dto.matricula == null || dto.matricula.isBlank()) {
-            throw new RuntimeException("La matrícula es obligatoria");
+            throw new RequestException("P-400", HttpStatus.BAD_REQUEST, "La matrícula es obligatoria");
         }
 
         Avion avion = new Avion();
@@ -60,7 +62,7 @@ public class AvionService {
     }
 
     public Avion cambiarEstado(Long id, EstadosAviones estado){
-        Avion avion = repository.findById(id).orElseThrow(() -> new RuntimeException("Avión no encontrado"));
+        Avion avion = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Avión no encontrado"));
         avion.setEstado(estado);
 
         return repository.save(avion);
@@ -77,20 +79,20 @@ public class AvionService {
 
     public void eliminarAvion(Long id){
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Avión no encontrado");
+            throw new ResourceNotFoundException("Avión no encontrado");
         }
         repository.deleteById(id);
     }
 
     public Avion obtenerPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Avión no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Avión no encontrado"));
     }
 
     public Avion actualizar(Long id, AvionDTO dto) {
 
         Avion avion = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Avión no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Avión no encontrado"));
 
         avion.setModelo(dto.modelo);
         avion.setMatricula(dto.matricula);
